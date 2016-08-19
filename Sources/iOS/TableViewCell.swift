@@ -31,47 +31,40 @@
 import UIKit
 
 @IBDesignable
-@objc(Button)
-open class Button: UIButton {
+open class TableViewCell: UITableViewCell {
 	/**
      A CAShapeLayer used to manage elements that would be affected by
      the clipToBounds property of the backing layer. For example, this
      allows the dropshadow effect on the backing layer, while clipping
      the image to a desired shape within the visualLayer.
      */
-	public private(set) var visualLayer: CAShapeLayer!
+	open internal(set) var visualLayer: CAShapeLayer!
 	
-	/**
-     A base delegate reference used when subclassing View.
-     */
+	/// A base delegate reference used when subclassing View.
 	public weak var delegate: MaterialDelegate?
 	
-	/// An Array of pulse layers.
-	public private(set) lazy var pulseLayers = [CAShapeLayer]()
-	
-	/// The opacity value for the pulse animation.
-	@IBInspectable open var pulseOpacity: CGFloat = 0.25
-	
-	/// The color of the pulse effect.
-	@IBInspectable open var pulseColor = Color.grey.base
-	
-	/// The type of PulseAnimation.
-	public var pulseAnimation: PulseAnimation = .pointWithBacking
-	
+    /// An Array of pulse layers.
+    open private(set) lazy var pulseLayers = [CAShapeLayer]()
+    
+    /// The opcaity value for the pulse animation.
+    @IBInspectable
+    open var pulseOpacity: CGFloat = 0.25
+    
+    /// The color of the pulse effect.
+    @IBInspectable
+    open var pulseColor = Color.grey.base
+    
+    /// The type of PulseAnimation.
+    open var pulseAnimation: PulseAnimation = .pointWithBacking
+    
 	/// A property that accesses the backing layer's backgroundColor.
-	@IBInspectable open override var backgroundColor: UIColor? {
+	@IBInspectable
+    open override var backgroundColor: UIColor? {
 		didSet {
 			layer.backgroundColor = backgroundColor?.cgColor
 		}
 	}
 	
-	/// A preset property for updated contentEdgeInsets.
-	open var contentEdgeInsetsPreset: EdgeInsetsPreset = .none {
-		didSet {
-			contentEdgeInsets = EdgeInsetsPresetToValue(preset: contentEdgeInsetsPreset)
-		}
-	}
-    
 	/**
      An initializer that initializes the object with a NSCoder object.
      - Parameter aDecoder: A NSCoder instance.
@@ -82,33 +75,27 @@ open class Button: UIButton {
 	}
 	
 	/**
-     An initializer that initializes the object with a CGRect object.
-     If AutoLayout is used, it is better to initilize the instance
-     using the init() initializer.
-     - Parameter frame: A CGRect instance.
+     An initializer that initializes the object.
+     - Parameter style: A UITableViewCellStyle enum.
+     - Parameter reuseIdentifier: A String identifier.
      */
-	public override init(frame: CGRect) {
-		super.init(frame: frame)
+	public override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+		super.init(style: style, reuseIdentifier: reuseIdentifier)
 		prepareView()
 	}
 	
-	/// A convenience initializer.
-	public convenience init() {
-		self.init(frame: CGRect.zero)
+	open override func layoutSublayers(of layer: CALayer) {
+		super.layoutSublayers(of: layer)
+		if self.layer == layer {
+            layoutShape()
+			layoutVisualLayer()
+		}
 	}
 	
-    open override func layoutSublayers(of layer: CALayer) {
-        super.layoutSublayers(of: layer)
-        if self.layer == layer {
-            layoutShape()
-            layoutVisualLayer()
-        }
-    }
-    
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        layoutShadowPath()
-    }
+	open override func layoutSubviews() {
+		super.layoutSubviews()
+		layoutShadowPath()
+	}
 	
     /**
      Triggers the pulse animation.
@@ -116,7 +103,7 @@ open class Button: UIButton {
      from the center.
      */
     open func pulse(point: CGPoint? = nil) {
-        let p = nil == point ? CGPoint(x: CGFloat(width / 2), y: CGFloat(height / 2)) : point!
+        let p: CGPoint = nil == point ? CGPoint(x: CGFloat(width / 2), y: CGFloat(height / 2)) : point!
         Animation.pulseExpandAnimation(layer: layer, visualLayer: visualLayer, pulseColor: pulseColor, pulseOpacity: pulseOpacity, point: p, width: width, height: height, pulseLayers: &pulseLayers, pulseAnimation: pulseAnimation)
         _ = Animation.delay(time: 0.35) { [weak self] in
             guard let s = self else {
@@ -167,17 +154,20 @@ open class Button: UIButton {
      when subclassing.
      */
 	open func prepareView() {
-        contentScaleFactor = Device.scale
-        contentEdgeInsetsPreset = .none
+		selectionStyle = .none
+		separatorInset = UIEdgeInsets.zero
+		contentScaleFactor = Device.scale
+		imageView?.isUserInteractionEnabled = false
+		textLabel?.isUserInteractionEnabled = false
+		detailTextLabel?.isUserInteractionEnabled = false
 		prepareVisualLayer()
 	}
 	
 	/// Prepares the visualLayer property.
 	internal func prepareVisualLayer() {
-        visualLayer = CAShapeLayer()
-        visualLayer.zPosition = 0
+		visualLayer.zPosition = 0
 		visualLayer.masksToBounds = true
-		layer.addSublayer(visualLayer)
+		contentView.layer.addSublayer(visualLayer)
 	}
 	
 	/// Manages the layout for the visualLayer property.

@@ -1,32 +1,32 @@
 /*
-* Copyright (C) 2015 - 2016, Daniel Dahan and CosmicMind, Inc. <http://cosmicmind.io>.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-*	*	Redistributions of source code must retain the above copyright notice, this
-*		list of conditions and the following disclaimer.
-*
-*	*	Redistributions in binary form must reproduce the above copyright notice,
-*		this list of conditions and the following disclaimer in the documentation
-*		and/or other materials provided with the distribution.
-*
-*	*	Neither the name of CosmicMind nor the names of its
-*		contributors may be used to endorse or promote products derived from
-*		this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ * Copyright (C) 2015 - 2016, Daniel Dahan and CosmicMind, Inc. <http://cosmicmind.io>.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *	*	Redistributions of source code must retain the above copyright notice, this
+ *		list of conditions and the following disclaimer.
+ *
+ *	*	Redistributions in binary form must reproduce the above copyright notice,
+ *		this list of conditions and the following disclaimer in the documentation
+ *		and/or other materials provided with the distribution.
+ *
+ *	*	Neither the name of CosmicMind nor the names of its
+ *		contributors may be used to endorse or promote products derived from
+ *		this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 import UIKit
 
@@ -70,7 +70,7 @@ public class NavigationBar: UINavigationBar {
 	
 	/// Will render the view.
 	public var willRenderView: Bool {
-		return 0 < width && 0 < height
+		return 0 < width && 0 < height && nil != superview
 	}
 	
 	/// A preset wrapper around contentInset.
@@ -196,93 +196,90 @@ public class NavigationBar: UINavigationBar {
 			let titleView = prepareTitleView(item: item)
             let contentView = prepareContentView(item: item)
             
-            if let g: Int = Int(width / gridFactor) {
-                let columns: Int = g + 1
+            let g = Int(width / gridFactor)
+            let columns = g + 1
                 
-                titleView.frame.origin = CGPoint.zero
-                titleView.frame.size = intrinsicContentSize
-                titleView.grid.views = []
-                titleView.grid.axis.columns = columns
-                
-                contentView.grid.columns = columns
-                
-                // leftControls
-                if let v: Array<UIControl> = item.leftControls {
-                    for c in v {
-                        let w: CGFloat = c.intrinsicContentSize.width
-                        (c as? UIButton)?.contentEdgeInsets = UIEdgeInsets.zero
-                        c.frame.size.height = titleView.frame.size.height - contentInset.top - contentInset.bottom
-                        
-                        let q: Int = Int(w / gridFactor)
-                        c.grid.columns = q + 1
-                        
-                        contentView.grid.columns -= c.grid.columns
-                        
-                        titleView.addSubview(c)
-                        titleView.grid.views?.append(c)
-                    }
-                }
-                
-                titleView.addSubview(contentView)
-                titleView.grid.views?.append(contentView)
-                
-                // rightControls
-                if let v: Array<UIControl> = item.rightControls {
-                    for c in v {
-                        let w: CGFloat = c.intrinsicContentSize.width
-                        (c as? UIButton)?.contentEdgeInsets = UIEdgeInsets.zero
-                        c.frame.size.height = titleView.frame.size.height - contentInset.top - contentInset.bottom
-                        
-                        let q: Int = Int(w / gridFactor)
-                        c.grid.columns = q + 1
-                        
-                        contentView.grid.columns -= c.grid.columns
-                        
-                        titleView.addSubview(c)
-                        titleView.grid.views?.append(c)
-                    }
-                }
-                
-                titleView.grid.contentInset = contentInset
-                titleView.grid.interimSpace = interimSpace
-                titleView.grid.reload()
-                
-                // contentView alignment.
-                if nil != item.title && "" != item.title {
-                    if nil == item.titleLabel.superview {
-                        contentView.addSubview(item.titleLabel)
-                    }
-                    item.titleLabel.frame = contentView.bounds
-                } else {
-                    item.titleLabel.removeFromSuperview()
-                }
-                
-                if nil != item.detail && "" != item.detail {
-                    if nil == item.detailLabel.superview {
-                        contentView.addSubview(item.detailLabel)
-                    }
+            titleView.frame.origin = CGPoint.zero
+            titleView.frame.size = intrinsicContentSize
+            titleView.grid.views = []
+            titleView.grid.axis.columns = columns
+            
+            contentView.grid.columns = columns
+            
+            // leftControls
+            if let v = item.leftControls {
+                for c in v {
+                    let w = c.intrinsicContentSize.width
+                    (c as? UIButton)?.contentEdgeInsets = UIEdgeInsets.zero
+                    c.frame.size.height = titleView.frame.size.height - contentInset.top - contentInset.bottom
                     
-                    if nil == item.titleLabel.superview {
-                        item.detailLabel.frame = contentView.bounds
-                    } else {
-                        item.titleLabel.sizeToFit()
-                        item.detailLabel.sizeToFit()
-                        
-                        let diff: CGFloat = (contentView.frame.height - item.titleLabel.frame.height - item.detailLabel.frame.height) / 2
-                        
-                        item.titleLabel.frame.size.height += diff
-                        item.titleLabel.frame.size.width = contentView.frame.width
-                        
-                        item.detailLabel.frame.size.height += diff
-                        item.detailLabel.frame.size.width = contentView.frame.width
-                        item.detailLabel.frame.origin.y = item.titleLabel.frame.height
-                    }
-                } else {
-                    item.detailLabel.removeFromSuperview()
+                    c.grid.columns = Int(w / gridFactor) + 1
+                    
+                    contentView.grid.columns -= c.grid.columns
+                    
+                    titleView.addSubview(c)
+                    titleView.grid.views.append(c)
+                }
+            }
+            
+            titleView.addSubview(contentView)
+            titleView.grid.views.append(contentView)
+            
+            // rightControls
+            if let v = item.rightControls {
+                for c in v {
+                    let w = c.intrinsicContentSize.width
+                    (c as? UIButton)?.contentEdgeInsets = UIEdgeInsets.zero
+                    c.frame.size.height = titleView.frame.size.height - contentInset.top - contentInset.bottom
+                    
+                    c.grid.columns = Int(w / gridFactor) + 1
+                    
+                    contentView.grid.columns -= c.grid.columns
+                    
+                    titleView.addSubview(c)
+                    titleView.grid.views.append(c)
+                }
+            }
+            
+            titleView.grid.contentEdgeInsets = contentInset
+            titleView.grid.interimSpace = interimSpace
+            titleView.grid.reload()
+            
+            // contentView alignment.
+            if nil != item.title && "" != item.title {
+                if nil == item.titleLabel.superview {
+                    contentView.addSubview(item.titleLabel)
+                }
+                item.titleLabel.frame = contentView.bounds
+            } else {
+                item.titleLabel.removeFromSuperview()
+            }
+            
+            if nil != item.detail && "" != item.detail {
+                if nil == item.detailLabel.superview {
+                    contentView.addSubview(item.detailLabel)
                 }
                 
-                contentView.grid.reload()
+                if nil == item.titleLabel.superview {
+                    item.detailLabel.frame = contentView.bounds
+                } else {
+                    item.titleLabel.sizeToFit()
+                    item.detailLabel.sizeToFit()
+                    
+                    let diff = (contentView.frame.height - item.titleLabel.frame.height - item.detailLabel.frame.height) / 2
+                    
+                    item.titleLabel.frame.size.height += diff
+                    item.titleLabel.frame.size.width = contentView.frame.width
+                    
+                    item.detailLabel.frame.size.height += diff
+                    item.detailLabel.frame.size.width = contentView.frame.width
+                    item.detailLabel.frame.origin.y = item.titleLabel.frame.height
+                }
+            } else {
+                item.detailLabel.removeFromSuperview()
             }
+            
+            contentView.grid.reload()
         }
 	}
 	

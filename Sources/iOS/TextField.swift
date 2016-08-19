@@ -1,32 +1,32 @@
 /*
-* Copyright (C) 2015 - 2016, Daniel Dahan and CosmicMind, Inc. <http://cosmicmind.io>.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-*	*	Redistributions of source code must retain the above copyright notice, this
-*		list of conditions and the following disclaimer.
-*
-*	*	Redistributions in binary form must reproduce the above copyright notice,
-*		this list of conditions and the following disclaimer in the documentation
-*		and/or other materials provided with the distribution.
-*
-*	*	Neither the name of CosmicMind nor the names of its
-*		contributors may be used to endorse or promote products derived from
-*		this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ * Copyright (C) 2015 - 2016, Daniel Dahan and CosmicMind, Inc. <http://cosmicmind.io>.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *	*	Redistributions of source code must retain the above copyright notice, this
+ *		list of conditions and the following disclaimer.
+ *
+ *	*	Redistributions in binary form must reproduce the above copyright notice,
+ *		this list of conditions and the following disclaimer in the documentation
+ *		and/or other materials provided with the distribution.
+ *
+ *	*	Neither the name of CosmicMind nor the names of its
+ *		contributors may be used to endorse or promote products derived from
+ *		this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 import UIKit
 
@@ -50,7 +50,7 @@ public class TextField: UITextField {
 	}
 	
     /// Reference to the divider.
-	public private(set) lazy var divider: CAShapeLayer = CAShapeLayer()
+	public private(set) var divider: CAShapeLayer!
 	
 	/// Divider height.
 	@IBInspectable public var dividerHeight: CGFloat = 1
@@ -108,7 +108,7 @@ public class TextField: UITextField {
 	}
 	
 	/// The placeholder UILabel.
-	@IBInspectable public private(set) lazy var placeholderLabel: UILabel = UILabel(frame: CGRect.zero)
+	@IBInspectable public private(set) var placeholderLabel: UILabel!
 	
 	/// Placeholder textColor.
 	@IBInspectable public var placeholderColor: UIColor = Color.darkText.others {
@@ -291,7 +291,6 @@ public class TextField: UITextField {
 	
 	public override func layoutSubviews() {
 		super.layoutSubviews()
-		
         layoutToSize()
 	}
 	
@@ -305,7 +304,8 @@ public class TextField: UITextField {
 	
 	/// Handles the text editing did begin state.
 	public func handleEditingDidBegin() {
-		dividerEditingDidBeginAnimation()
+        layoutIfNeeded()
+        dividerEditingDidBeginAnimation()
 		placeholderEditingDidBeginAnimation()
 	}
 	
@@ -342,11 +342,9 @@ public class TextField: UITextField {
 	*/
 	public func prepareView() {
 		super.placeholder = nil
-		clipsToBounds = false
+        clipsToBounds = false
 		borderStyle = .none
 		backgroundColor = nil
-		textColor = Color.darkText.primary
-		font = RobotoFont.regularWithSize(size: 16)
 		contentScaleFactor = Device.scale
 		prepareDivider()
 		preparePlaceholderLabel()
@@ -354,11 +352,11 @@ public class TextField: UITextField {
 		prepareTargetHandlers()
         prepareTextAlignment()
 	}
-	
+    
 	/// Ensures that the components are sized correctly.
 	public func layoutToSize() {
 		if !animating {
-			layoutPlaceholderLabel()
+            layoutPlaceholderLabel()
 			layoutDetailLabel()
 			layoutClearIconButton()
 			layoutVisibilityIconButton()
@@ -482,14 +480,17 @@ public class TextField: UITextField {
 	
 	/// Prepares the divider.
 	private func prepareDivider() {
+        divider = CAShapeLayer()
 		dividerColor = Color.darkText.dividers
 		layer.addSublayer(divider)
 	}
 	
 	/// Prepares the placeholderLabel.
 	private func preparePlaceholderLabel() {
+        placeholderLabel = UILabel(frame: CGRect.zero)
 		placeholderColor = Color.darkText.others
-		addSubview(placeholderLabel)
+        font = RobotoFont.regularWithSize(size: 16)
+        addSubview(placeholderLabel)
 	}
 	
 	/// Prepares the detailLabel.
