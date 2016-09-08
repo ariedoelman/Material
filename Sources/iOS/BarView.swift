@@ -31,6 +31,9 @@
 import UIKit
 
 open class BarView: ControlView {
+    /// Divider layer.
+    open internal(set) var divider: Divider!
+    
 	/**
      An initializer that initializes the object with a NSCoder object.
      - Parameter aDecoder: A NSCoder instance.
@@ -58,6 +61,13 @@ open class BarView: ControlView {
 		super.init(leftControls: leftControls, rightControls: rightControls)
 	}
 	
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        if willRenderView {
+            divider.reload()
+        }
+    }
+    
 	/**
      Prepares the view instance when intialized. When subclassing,
      it is recommended to override the prepareView method
@@ -67,6 +77,11 @@ open class BarView: ControlView {
      */
 	open override func prepareView() {
 		super.prepareView()
-		depthPreset = .depth1
-	}
+        prepareDivider()
+    }
+    
+    /// Prepares the divider.
+    private func prepareDivider() {
+        divider = Divider(view: self)
+    }
 }

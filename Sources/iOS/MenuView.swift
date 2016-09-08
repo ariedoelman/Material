@@ -31,18 +31,20 @@
 import UIKit
 
 @objc(MenuViewDelegate)
-public protocol MenuViewDelegate : MaterialDelegate {
+public protocol MenuViewDelegate {
     /// Gets called when the user taps outside menu buttons.
     @objc
     optional func menuViewDidTapOutside(menuView: MenuView)
-    
 }
 
-public class MenuView : PulseView {
+open class MenuView : PulseView {
 	/// References the Menu instance.
-	public private(set) lazy var menu: Menu = Menu()
+	open internal(set) lazy var menu: Menu = Menu()
 	
-    public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    /// A delegation reference.
+    open weak var delegate: MenuViewDelegate?
+    
+    open override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         /**
          Since the subviews will be outside the bounds of this view,
          we need to look at the subviews to see if we have a hit.
@@ -59,20 +61,20 @@ public class MenuView : PulseView {
         }
         
         if menu.isOpened {
-            (delegate as? MenuViewDelegate)?.menuViewDidTapOutside?(menuView: self)
+            delegate?.menuViewDidTapOutside?(menuView: self)
         }
         
         return super.hitTest(point, with: event)
     }
     
 	/**
-	Prepares the view instance when intialized. When subclassing,
-	it is recommended to override the prepareView method
-	to initialize property values and other setup operations.
-	The super.prepareView method should always be called immediately
-	when subclassing.
-	*/
-	public override func prepareView() {
+     Prepares the view instance when intialized. When subclassing,
+     it is recommended to override the prepareView method
+     to initialize property values and other setup operations.
+     The super.prepareView method should always be called immediately
+     when subclassing.
+     */
+	open override func prepareView() {
 		super.prepareView()
 		pulseAnimation = .none
 		clipsToBounds = false
@@ -80,11 +82,11 @@ public class MenuView : PulseView {
 	}
 
 	/**
-	Opens the menu with a callback.
-	- Parameter completion: An Optional callback that is executed when
-	all menu items have been opened.
-	*/
-	public func open(completion: (() -> Void)? = nil) {
+     Opens the menu with a callback.
+     - Parameter completion: An Optional callback that is executed when
+     all menu items have been opened.
+     */
+	open func open(completion: (() -> Void)? = nil) {
 		if true == menu.views?.first?.isUserInteractionEnabled {
 			menu.views?.first?.isUserInteractionEnabled = false
 			menu.open { [weak self] (v: UIView) in
@@ -97,11 +99,11 @@ public class MenuView : PulseView {
 	}
 	
 	/**
-	Closes the menu with a callback.
-	- Parameter completion: An Optional callback that is executed when
-	all menu items have been closed.
-	*/
-	public func close(completion: (() -> Void)? = nil) {
+     Closes the menu with a callback.
+     - Parameter completion: An Optional callback that is executed when
+     all menu items have been closed.
+     */
+	open func close(completion: (() -> Void)? = nil) {
 		if true == menu.views?.first?.isUserInteractionEnabled {
 			menu.views?.first?.isUserInteractionEnabled = false
 			menu.close { [weak self] (v: UIView) in

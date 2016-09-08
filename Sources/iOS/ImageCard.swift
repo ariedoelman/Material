@@ -93,15 +93,15 @@ open class ImageCard: PulseView {
 				prepareImageLayer()
 				imageLayer?.contents = v.cgImage
 				if 0 == maxImageHeight {
-					imageLayer?.frame.size.height = image!.size.height / contentsScale
+					imageLayer?.height = image!.height / contentsScale
 				} else {
-					let h: CGFloat = image!.size.height / contentsScale
-					imageLayer?.frame.size.height = maxImageHeight < h ? maxImageHeight : h
+					let h: CGFloat = image!.height / contentsScale
+					imageLayer?.height = maxImageHeight < h ? maxImageHeight : h
 				}
 				imageLayer?.isHidden = false
 			} else {
 				imageLayer?.contents = nil
-				imageLayer?.frame = CGRect.zero
+				imageLayer?.frame = .zero
 				imageLayer?.isHidden = true
 				imageLayer?.removeFromSuperlayer()
 			}
@@ -273,7 +273,7 @@ open class ImageCard: PulseView {
 	/**
 	:name:	leftButtons
 	*/
-	open var leftButtons = [UIButton]() {
+	open var leftButtons = [UIView]() {
 		didSet {
 			reloadView()
 		}
@@ -301,7 +301,7 @@ open class ImageCard: PulseView {
 	/**
 	:name:	rightButtons
 	*/
-	open var rightButtons = [UIButton]() {
+	open var rightButtons = [UIView]() {
 		didSet {
 			reloadView()
 		}
@@ -325,14 +325,14 @@ open class ImageCard: PulseView {
 	:name:	init
 	*/
 	public convenience init() {
-		self.init(frame: CGRect.zero)
+		self.init(frame: .zero)
 	}
 	
 	/**
 	:name:	init
 	*/
-	public convenience init?(image: UIImage? = nil, titleLabel: UILabel? = nil, contentView: UIView? = nil, leftButtons: [UIButton]? = nil, rightButtons: [UIButton]? = nil) {
-		self.init(frame: CGRect.zero)
+	public convenience init?(image: UIImage? = nil, titleLabel: UILabel? = nil, contentView: UIView? = nil, leftButtons: [UIView]? = nil, rightButtons: [UIView]? = nil) {
+		self.init(frame: .zero)
 		prepareProperties(image: image, titleLabel: titleLabel, contentView: contentView, leftButtons: leftButtons, rightButtons: rightButtons)
 	}
 	
@@ -577,7 +577,7 @@ open class ImageCard: PulseView {
 	/**
 	:name:	prepareProperties
 	*/
-	internal func prepareProperties(image: UIImage?, titleLabel: UILabel?, contentView: UIView?, leftButtons: [UIButton]?, rightButtons: [UIButton]?) {
+	internal func prepareProperties(image: UIImage?, titleLabel: UILabel?, contentView: UIView?, leftButtons: [UIView]?, rightButtons: [UIView]?) {
 		self.image = image
 		self.titleLabel = titleLabel
 		self.contentView = contentView
